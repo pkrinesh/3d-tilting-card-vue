@@ -1,34 +1,24 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue';
+import { computed, reactive, ref, watchEffect } from 'vue';
 import { useMouse } from '@vueuse/core';
 
 const cardRef = ref<HTMLDivElement | null>(null);
-const mousePos = useMouse({ type: 'client' });
+const mousePos = reactive(useMouse({ type: 'client' }));
 
-watchEffect(() => {
-  rotateElement(mousePos);
-});
-
-function rotateElement(mouse: typeof mousePos) {
-  if (!cardRef.value) return;
-
-  // get mouse position
-  const x = mouse.x.value;
-  const y = mouse.y.value;
-
-  // find the middle
+const offset = computed(() => {
   const middleX = window.innerWidth / 2;
   const middleY = window.innerHeight / 2;
 
-  // get offset from middle as a percentage
-  // and tone it down a little
-  const offsetX = ((x - middleX) / middleX) * 45;
-  const offsetY = ((y - middleY) / middleY) * 45;
+  return {
+    x: ((mousePos.x - middleX) / middleX) * 20,
+    y: ((mousePos.y - middleY) / middleY) * 20,
+  };
+});
 
-  // set rotation
-  cardRef.value?.style.setProperty('--rotateX', offsetX + 'deg');
-  cardRef.value?.style.setProperty('--rotateY', -1 * offsetY + 'deg');
-}
+watchEffect(() => {
+  cardRef.value?.style.setProperty('--rotateX', offset.value.x + 'deg');
+  cardRef.value?.style.setProperty('--rotateY', -1 * offset.value.y + 'deg');
+});
 </script>
 
 <template>
