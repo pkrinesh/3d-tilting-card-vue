@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useMouse } from '@vueuse/core';
+import { useMouse, useMouseInElement } from '@vueuse/core';
 import { reactive, ref, watchEffect } from 'vue';
 
 const cardRef = ref<HTMLDivElement | null>(null);
 const mousePos = reactive(useMouse({ type: 'client' }));
+const data = reactive(useMouseInElement(cardRef));
 
 const middleY = window.innerHeight / 2;
 const middleX = window.innerWidth / 2;
@@ -12,17 +13,24 @@ const rotateX = ref('0deg');
 const rotateY = ref('0deg');
 
 watchEffect(() => {
-  const offsetX = ((mousePos.x - middleX) / middleX) * 20;
-  const offsetY = ((mousePos.y - middleY) / middleY) * 20;
+  const offsetY = !data.isOutside ? ((mousePos.y - middleY) / middleY) * 30 : 0;
+  const offsetX = !data.isOutside ? ((mousePos.x - middleX) / middleX) * 30 : 0;
 
-  rotateX.value = offsetX + 'deg';
-  rotateY.value = -1 * offsetY + 'deg';
+  rotateX.value = -1 * offsetX + 'deg';
+  rotateY.value = 1 * offsetY + 'deg';
 });
 </script>
 
 <template>
   <div class="container">
-    <div ref="cardRef" class="card language-css" tabindex="0"></div>
+    <div
+      ref="cardRef"
+      class="card language-css"
+      :class="[{ card_transition: data.isOutside }]"
+      tabindex="0"
+    >
+      <pre>{{ JSON.stringify(data, null, 2) }}</pre>
+    </div>
   </div>
 </template>
 
@@ -30,8 +38,7 @@ watchEffect(() => {
 .card {
   width: 500px;
   height: 300px;
-  font-size: 3rem;
-  font-weight: bold;
+  color: gray;
   background: hsl(222, 45%, 7%);
   padding: 2rem;
   border-radius: 1rem;
@@ -41,6 +48,10 @@ watchEffect(() => {
   transform-style: preserve-3d;
   transform: perspective(5000px) rotateY(v-bind(rotateX))
     rotateX(v-bind(rotateY));
+}
+
+.card_transition {
+  transition: all ease-in 200ms;
 }
 
 .card::before,
