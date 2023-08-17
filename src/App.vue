@@ -1,18 +1,33 @@
 <script setup lang="ts">
-/* no-prettier */
+import { useMouse } from '@vueuse/core';
+import { reactive, ref, watchEffect } from 'vue';
+
+const cardRef = ref<HTMLDivElement | null>(null);
+const mousePos = reactive(useMouse({ type: 'client' }));
+
+const middleY = window.innerHeight / 2;
+const middleX = window.innerWidth / 2;
+
+const rotateX = ref('0deg');
+const rotateY = ref('0deg');
+
+watchEffect(() => {
+  const offsetX = ((mousePos.x - middleX) / middleX) * 20;
+  const offsetY = ((mousePos.y - middleY) / middleY) * 20;
+
+  rotateX.value = offsetX + 'deg';
+  rotateY.value = -1 * offsetY + 'deg';
+});
 </script>
 
 <template>
   <div class="container">
-    <div class="card language-css" tabindex="0"></div>
+    <div ref="cardRef" class="card language-css" tabindex="0"></div>
   </div>
 </template>
 
 <style scoped>
 .card {
-  --rotateX: 0deg;
-  --rotateY: 0deg;
-
   width: 500px;
   height: 300px;
   font-size: 3rem;
@@ -24,7 +39,8 @@
   position: relative;
 
   transform-style: preserve-3d;
-  transform: perspective(5000px) rotateY(var(--rotateX)) rotateX(var(--rotateY));
+  transform: perspective(5000px) rotateY(v-bind(rotateX))
+    rotateX(v-bind(rotateY));
 }
 
 .card::before,
