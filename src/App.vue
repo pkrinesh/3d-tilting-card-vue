@@ -1,26 +1,20 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue';
+import { useMouse } from '@vueuse/core';
 
 const cardRef = ref<HTMLDivElement | null>(null);
+const mousePos = useMouse({ type: 'client' });
 
 watchEffect(() => {
-  if (!cardRef.value) return;
-
-  const handleMouseMove = (e: MouseEvent) => {
-    rotateElement(e, cardRef);
-  };
-
-  document.addEventListener('mousemove', handleMouseMove);
-
-  return () => document.removeEventListener('mousemove', handleMouseMove);
+  rotateElement(mousePos);
 });
 
-function rotateElement(event: MouseEvent, element: typeof cardRef) {
-  if (!element.value) return;
+function rotateElement(mouse: typeof mousePos) {
+  if (!cardRef.value) return;
 
   // get mouse position
-  const x = event.clientX;
-  const y = event.clientY;
+  const x = mouse.x.value;
+  const y = mouse.y.value;
 
   // find the middle
   const middleX = window.innerWidth / 2;
@@ -32,8 +26,8 @@ function rotateElement(event: MouseEvent, element: typeof cardRef) {
   const offsetY = ((y - middleY) / middleY) * 45;
 
   // set rotation
-  element.value?.style.setProperty('--rotateX', offsetX + 'deg');
-  element.value?.style.setProperty('--rotateY', -1 * offsetY + 'deg');
+  cardRef.value?.style.setProperty('--rotateX', offsetX + 'deg');
+  cardRef.value?.style.setProperty('--rotateY', -1 * offsetY + 'deg');
 }
 </script>
 
