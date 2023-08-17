@@ -1,23 +1,22 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watchEffect } from 'vue';
 import { useMouse } from '@vueuse/core';
+import { reactive, ref, watchEffect } from 'vue';
 
 const cardRef = ref<HTMLDivElement | null>(null);
 const mousePos = reactive(useMouse({ type: 'client' }));
 
-const offset = computed(() => {
-  const middleX = window.innerWidth / 2;
-  const middleY = window.innerHeight / 2;
+const middleY = window.innerHeight / 2;
+const middleX = window.innerWidth / 2;
 
-  return {
-    x: ((mousePos.x - middleX) / middleX) * 20,
-    y: ((mousePos.y - middleY) / middleY) * 20,
-  };
-});
+const rotateX = ref('0deg');
+const rotateY = ref('0deg');
 
 watchEffect(() => {
-  cardRef.value?.style.setProperty('--rotateX', offset.value.x + 'deg');
-  cardRef.value?.style.setProperty('--rotateY', -1 * offset.value.y + 'deg');
+  const offsetX = ((mousePos.x - middleX) / middleX) * 20;
+  const offsetY = ((mousePos.y - middleY) / middleY) * 20;
+
+  rotateX.value = offsetX + 'deg';
+  rotateY.value = -1 * offsetY + 'deg';
 });
 </script>
 
@@ -29,9 +28,6 @@ watchEffect(() => {
 
 <style scoped>
 .card {
-  --rotateX: 0deg;
-  --rotateY: 0deg;
-
   width: 500px;
   height: 300px;
   font-size: 3rem;
@@ -43,7 +39,8 @@ watchEffect(() => {
   position: relative;
 
   transform-style: preserve-3d;
-  transform: perspective(5000px) rotateY(var(--rotateX)) rotateX(var(--rotateY));
+  transform: perspective(5000px) rotateY(v-bind(rotateX))
+    rotateX(v-bind(rotateY));
 }
 
 .card::before,
