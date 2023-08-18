@@ -11,19 +11,13 @@ const rotateY = ref('0deg');
 const MAX_ROTATION = 10;
 
 watchEffect(() => {
-  const middleY = mouse.elementHeight / 2;
-  const middleX = mouse.elementWidth / 2;
+  const offsetX =
+    (mouse.elementX / mouse.elementWidth) * MAX_ROTATION - MAX_ROTATION / 2;
+  const offsetY =
+    (mouse.elementY / mouse.elementHeight) * MAX_ROTATION - MAX_ROTATION / 2;
 
-  const offsetY = !mouse.isOutside
-    ? ((mouse.elementY - middleY) / middleY) * MAX_ROTATION
-    : 0;
-
-  const offsetX = !mouse.isOutside
-    ? ((mouse.elementX - middleX) / middleX) * MAX_ROTATION
-    : 0;
-
-  rotateX.value = -1 * offsetX + 'deg';
-  rotateY.value = 1 * offsetY + 'deg';
+  rotateX.value = !mouse.isOutside ? -1 * offsetX + 'deg' : '0deg';
+  rotateY.value = !mouse.isOutside ? 1 * offsetY + 'deg' : '0deg';
 });
 </script>
 
