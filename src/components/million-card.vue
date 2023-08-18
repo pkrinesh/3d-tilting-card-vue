@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { useMouseInElement } from '@vueuse/core';
-import { reactive, ref, watchEffect } from 'vue';
+import { computed, reactive, ref } from 'vue';
 
 const cardRef = ref<HTMLDivElement | null>(null);
 const mouse = reactive(useMouseInElement(cardRef));
-
-const rotateX = ref('0deg');
-const rotateY = ref('0deg');
-
 const MAX_ROTATION = 10;
 
-watchEffect(() => {
+const cardTransform = computed(() => {
   const offsetX =
     (mouse.elementX / mouse.elementWidth) * MAX_ROTATION - MAX_ROTATION / 2;
   const offsetY =
     (mouse.elementY / mouse.elementHeight) * MAX_ROTATION - MAX_ROTATION / 2;
 
-  rotateX.value = !mouse.isOutside ? -1 * offsetX + 'deg' : '0deg';
-  rotateY.value = !mouse.isOutside ? 1 * offsetY + 'deg' : '0deg';
+  const rX = -1 * offsetX + 'deg';
+  const rY = 1 * offsetY + 'deg';
+
+  return mouse.isOutside
+    ? ''
+    : `perspective(5000px) rotateY(${rX}) rotateX(${rY})`;
 });
 </script>
 
@@ -25,9 +25,12 @@ watchEffect(() => {
   <div class="container">
     <div
       ref="cardRef"
-      class="card language-css"
-      :class="[{ card_transition: mouse.isOutside }]"
       tabindex="0"
+      class="card language-css"
+      :style="{
+        // transform: cardTransform,
+        // transition: 'transform 0.25s ease-out',
+      }"
     >
       <!-- <pre>{{ JSON.stringify(mouse, null, 2) }}</pre> -->
     </div>
@@ -47,8 +50,7 @@ watchEffect(() => {
 
   transition: transform 0.2s ease-out;
   transform-style: preserve-3d;
-  transform: perspective(5000px) rotateY(v-bind(rotateX))
-    rotateX(v-bind(rotateY));
+  transform: v-bind(cardTransform);
 }
 
 .card::before,
