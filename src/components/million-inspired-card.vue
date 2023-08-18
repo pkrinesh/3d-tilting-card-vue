@@ -1,20 +1,26 @@
 <script setup lang="ts">
-import { useMouse, useMouseInElement } from '@vueuse/core';
+import { useMouseInElement } from '@vueuse/core';
 import { reactive, ref, watchEffect } from 'vue';
 
 const cardRef = ref<HTMLDivElement | null>(null);
-const mousePos = reactive(useMouse({ type: 'client' }));
-const data = reactive(useMouseInElement(cardRef));
-
-const middleY = window.innerHeight / 2;
-const middleX = window.innerWidth / 2;
+const mouse = reactive(useMouseInElement(cardRef));
 
 const rotateX = ref('0deg');
 const rotateY = ref('0deg');
 
+const MAX_ROTATION = 10;
+
 watchEffect(() => {
-  const offsetY = !data.isOutside ? ((mousePos.y - middleY) / middleY) * 30 : 0;
-  const offsetX = !data.isOutside ? ((mousePos.x - middleX) / middleX) * 30 : 0;
+  const middleY = mouse.elementHeight / 2;
+  const middleX = mouse.elementWidth / 2;
+
+  const offsetY = !mouse.isOutside
+    ? ((mouse.elementY - middleY) / middleY) * MAX_ROTATION
+    : 0;
+
+  const offsetX = !mouse.isOutside
+    ? ((mouse.elementX - middleX) / middleX) * MAX_ROTATION
+    : 0;
 
   rotateX.value = -1 * offsetX + 'deg';
   rotateY.value = 1 * offsetY + 'deg';
@@ -26,10 +32,10 @@ watchEffect(() => {
     <div
       ref="cardRef"
       class="card language-css"
-      :class="[{ card_transition: data.isOutside }]"
+      :class="[{ card_transition: mouse.isOutside }]"
       tabindex="0"
     >
-      <pre>{{ JSON.stringify(data, null, 2) }}</pre>
+      <!-- <pre>{{ JSON.stringify(mouse, null, 2) }}</pre> -->
     </div>
   </div>
 </template>
@@ -45,13 +51,10 @@ watchEffect(() => {
 
   position: relative;
 
+  transition: transform 0.2s ease-out;
   transform-style: preserve-3d;
   transform: perspective(5000px) rotateY(v-bind(rotateX))
     rotateX(v-bind(rotateY));
-}
-
-.card_transition {
-  transition: all ease-in 200ms;
 }
 
 .card::before,
