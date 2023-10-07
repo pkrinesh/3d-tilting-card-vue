@@ -1,37 +1,50 @@
 <script setup lang="ts">
-import { useMouse } from '@vueuse/core';
-import { reactive, ref, watchEffect } from 'vue';
+import {
+  // useMouse,
+  useMouseInElement,
+} from '@vueuse/core'
+import { computed, reactive, ref, watchEffect } from 'vue'
 
-const cardRef = ref<HTMLDivElement | null>(null);
-const mousePos = reactive(useMouse({ type: 'client' }));
+const cardRef = ref<HTMLDivElement | null>(null)
+const mouse = reactive(useMouseInElement(cardRef, { target: window }))
+// const mousePos = reactive(useMouse({ type: 'client' }))
 
-const middleY = window.innerHeight / 2;
-const middleX = window.innerWidth / 2;
+// const middleY = window.innerHeight / 2
+// const middleX = window.innerWidth / 2
 
-const rotateX = ref('0deg');
-const rotateY = ref('0deg');
+const middle = computed(() => ({
+  x: mouse.elementPositionX + mouse.elementWidth / 2,
+  y: mouse.elementPositionY + mouse.elementHeight / 2,
+}))
+
+const rotateX = ref('0deg')
+const rotateY = ref('0deg')
 
 watchEffect(() => {
-  const offsetX = ((mousePos.x - middleX) / middleX) * 20;
-  const offsetY = ((mousePos.y - middleY) / middleY) * 20;
+  const offsetX = ((mouse.x - middle.value.x) / middle.value.x) * 20
+  const offsetY = ((mouse.y - middle.value.y) / middle.value.y) * 20
 
-  rotateX.value = offsetX + 'deg';
-  rotateY.value = -1 * offsetY + 'deg';
-});
+  // const offsetX = ((mousePos.x - middleX) / middleX) * 20;
+  // const offsetY = ((mousePos.y - middleY) / middleY) * 20;
+
+  rotateX.value = offsetX + 'deg'
+  rotateY.value = -1 * offsetY + 'deg'
+})
 </script>
 
 <template>
-  <div class="container">
-    <div ref="cardRef" class="card language-css" tabindex="0"></div>
+  <div class="">
+    <div ref="cardRef" class="card flex justify-center items-center" tabindex="0">
+      <div>Follow the mouse (Window)</div>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .card {
-  width: 500px;
-  height: 300px;
-  font-size: 3rem;
-  font-weight: bold;
+  width: 400px;
+  height: 200px;
+  color: gray;
   background: hsl(222, 45%, 7%);
   padding: 2rem;
   border-radius: 1rem;
@@ -39,8 +52,7 @@ watchEffect(() => {
   position: relative;
 
   transform-style: preserve-3d;
-  transform: perspective(5000px) rotateY(v-bind(rotateX))
-    rotateX(v-bind(rotateY));
+  transform: perspective(5000px) rotateY(v-bind(rotateX)) rotateX(v-bind(rotateY));
 }
 
 .card::before,

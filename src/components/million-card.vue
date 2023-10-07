@@ -1,46 +1,43 @@
 <script setup lang="ts">
-import { useMouseInElement } from '@vueuse/core';
-import { computed, reactive, ref } from 'vue';
+import { useMouseInElement } from '@vueuse/core'
+import { computed, reactive, ref } from 'vue'
 
-const cardRef = ref<HTMLDivElement | null>(null);
-const mouse = reactive(useMouseInElement(cardRef));
-const MAX_ROTATION = 10;
+const cardRef = ref<HTMLDivElement | null>(null)
+const mouse = reactive(useMouseInElement(cardRef))
+const MAX_ROTATION = 10
 
 const cardTransform = computed(() => {
-  const offsetX =
-    (mouse.elementX / mouse.elementWidth) * MAX_ROTATION - MAX_ROTATION / 2;
-  const offsetY =
-    (mouse.elementY / mouse.elementHeight) * MAX_ROTATION - MAX_ROTATION / 2;
+  const offsetX = (mouse.elementX / mouse.elementWidth) * MAX_ROTATION - MAX_ROTATION / 2
+  const offsetY = (mouse.elementY / mouse.elementHeight) * MAX_ROTATION - MAX_ROTATION / 2
 
-  const rX = -1 * offsetX + 'deg';
-  const rY = 1 * offsetY + 'deg';
+  const rX = -1 * offsetX + 'deg'
+  const rY = 1 * offsetY + 'deg'
 
-  return mouse.isOutside
-    ? ''
-    : `perspective(5000px) rotateY(${rX}) rotateX(${rY})`;
-});
+  return mouse.isOutside ? '' : `perspective(5000px) rotateY(${rX}) rotateX(${rY})`
+})
 </script>
 
 <template>
-  <div class="container">
+  <div class="">
     <div
       ref="cardRef"
       tabindex="0"
-      class="card language-css"
+      class="card flex justify-center items-center"
       :style="{
         // transform: cardTransform,
         // transition: 'transform 0.25s ease-out',
       }"
     >
       <!-- <pre>{{ JSON.stringify(mouse, null, 2) }}</pre> -->
+      <p>Million.js inspired card.</p>
     </div>
   </div>
 </template>
 
 <style scoped>
 .card {
-  width: 500px;
-  height: 300px;
+  width: 400px;
+  height: 200px;
   color: gray;
   background: hsl(222, 45%, 7%);
   padding: 2rem;

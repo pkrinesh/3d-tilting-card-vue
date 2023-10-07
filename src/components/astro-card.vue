@@ -1,51 +1,44 @@
 <script setup lang="ts">
 // inspired from LearnVue
 // https://github.com/LearnVueCo/tutorial-code/blob/main/apps/astro/src/tutorials/3d-card/Card.vue
-import { useMouseInElement } from '@vueuse/core';
-import { computed, reactive, ref } from 'vue';
+import { useMouseInElement } from '@vueuse/core'
+import { computed, reactive, ref } from 'vue'
 
-const cardRef = ref<HTMLDivElement | null>(null);
-const mouse = reactive(useMouseInElement(cardRef));
+const cardRef = ref<HTMLDivElement | null>(null)
+const mouse = reactive(useMouseInElement(cardRef))
 
-const MAX_ROTATION = 12;
+const MAX_ROTATION = 12
 
 const cardTransform = computed(() => {
-  const rX = (
-    (mouse.elementY / mouse.elementHeight) * MAX_ROTATION -
-    MAX_ROTATION / 2
-  ).toFixed(2); // handles x-axis
-
-  const rY = (
-    (mouse.elementX / mouse.elementWidth) * MAX_ROTATION -
-    MAX_ROTATION / 2
-  ).toFixed(2); // handles y-axis
+  const rX = ((mouse.elementY / mouse.elementHeight) * MAX_ROTATION - MAX_ROTATION / 2).toFixed(2) // handles x-axis
+  const rY = ((mouse.elementX / mouse.elementWidth) * MAX_ROTATION - MAX_ROTATION / 2).toFixed(2) // handles y-axis
 
   return mouse.isOutside
     ? ''
-    : `perspective(${
-        mouse.elementWidth
-      }px) rotateX(${rX}deg) rotateY(${-rY}deg)`;
-});
+    : `perspective(${mouse.elementWidth}px) rotateX(${rX}deg) rotateY(${-rY}deg)`
+})
 </script>
 
 <template>
-  <div class="container">
+  <div class="">
     <div
       ref="cardRef"
-      class="card language-css"
+      class="card flex justify-center items-center"
       :style="{
         transform: cardTransform,
         transition: 'transform 0.25s ease-out',
       }"
       tabindex="0"
-    ></div>
+    >
+      Astro.js inspired Card
+    </div>
   </div>
 </template>
 
 <style scoped>
 .card {
-  width: 500px;
-  height: 300px;
+  width: 400px;
+  height: 200px;
   color: gray;
   background: #aa076b;
   background: -webkit-linear-gradient(to top, #61045f, #aa076b);

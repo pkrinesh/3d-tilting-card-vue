@@ -20,16 +20,10 @@
 
 body {
   background: hsl(224, 32%, 12%);
-  background-image: conic-gradient(
-    from 0deg at 50% 50%,
-    blue,
-    purple,
-    purple,
-    blue
-  );
+  background-image: conic-gradient(from 0deg at 50% 50%, blue, purple, purple, blue);
   background-blend-mode: multiply;
 
   min-block-size: 100dvh;
-  display: grid;
-  place-items: center;
+  /* display: grid;
+  place-items: center; */
 }
